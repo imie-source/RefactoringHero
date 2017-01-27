@@ -13,53 +13,46 @@ use src\View\View;
 
 class PowerController extends Controller
 {
-    private $powerDAO;
-    private $powerDTO;
 
-    public function getAllAction()
+    public function getAllAction($datas = null)
     {
-        $powers = $this->getDoctrine()->getRepository('\src\Model\PowerDTO')->findAll();
-        $view = new View('power','allPower');
-        return $view->renderView(['powers'=>$powers,'powerUpdate'=>$powerUpdate]);
-    }
+        $em = $this->getDoctrine();
+        $modif = false;
+        $power = new PowerDTO();
 
-    public function getOneAction($datas=null)
-    {
-        if(isset($datas[2])) {
-            $this->powerDTO->setPowerId($datas[2]);
-            $powerDTO = $this->powerDAO->getOnePower($this->powerDTO);
-            return $this->getAllAction($datas,$powerDTO);
-        }else{
-            header("location: /".PATH."/index.php/power/getAll");
+        if(isset($datas[2])){
+            $modif = true;
+            $power = $this->getDoctrine()->getRepository('\src\Model\PowerDTO')->find($datas[2]);
         }
-        return null;
-    }
 
-    public function InsertAction()
-    {
-        $this->powerDTO->hydrate($_POST);
-        $this->powerDAO->insertPower($this->powerDTO);
-        header("location: /". PATH . "/index.php/power/getAll");
-    }
+        if(isset($_POST['powerName'], $_POST['powerDesc'])){
+            $power->hydrate($_POST);
 
-    public function UpdateAction($datas=null)
-    {
-        if(isset($datas[2])) {
-            $this->powerDTO->setPowerId($datas[2]);
-            $this->powerDTO->hydrate($_POST);
-            $this->powerDAO->updatePower($this->powerDTO);
+            $em->persist($power);
+            $em->flush();
+            header("location: ".PATH."/index.php/power/getAll");
+            die();
         }
-        header("location: /".PATH."/index.php/power/getAll");
+        
+        $powers = $em->getRepository('\src\Model\PowerDTO')->findAll();
 
+        return $this->render('power', 'allPower', [
+            'powers'=>$powers,
+            'powerUpdate' => $power
+        ]);
     }
 
     public function deleteAction($datas=null)
     {
         if(isset($datas[2])) {
-            $this->powerDTO->setPowerID($datas[2]);
-            $this->powerDAO->deletePower($this->powerDTO);
+            $em = $this->getDoctrine();
+            $repo = $em->getRepository('src\Model\PowerDTO');
+            $this->getDoctrine()->remove($repo->find($datas[2]));
+            $em->flush();
         }
-        header("location: /".PATH."/index.php/power/getAll");
+
+        header("location: ".PATH."/index.php/power/getAll");
+        die();
     }
 
 }

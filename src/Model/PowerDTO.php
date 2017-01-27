@@ -68,17 +68,9 @@ class PowerDTO
     /**
      * @return mixed
      */
-    public function getPowerId()
+    public function getId()
     {
-        return $this->powerId;
-    }
-
-    /**
-     * @param mixed $powerId
-     */
-    public function setPowerId($powerId)
-    {
-        $this->powerId = $powerId;
+        return $this->id;
     }
 
     /**
