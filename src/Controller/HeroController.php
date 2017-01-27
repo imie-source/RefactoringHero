@@ -9,47 +9,58 @@
 namespace src\Controller;
 
 use src\Model\HeroPowerDTO;
-use src\Model\PowerDAO;
-use src\Model\SuperHeroDAO;
-use src\Model\SuperHeroDTO;
-use src\Model\TeamDAO;
 use src\Model\TeamDTO;
-use src\View\View;
+use src\Model\SuperHeroDTO;
+use src\Model\PowerDTO;
 
-class HeroController
+class HeroController extends Controller
 {
-    private $heroDAO;
-    private $heroDTO;
-
-    public function __construct()
-    {
-        $this->heroDAO = new SuperHeroDAO();
-        $this->heroDTO = new SuperHeroDTO();
-    }
-
-    /**
-     * TODO passer en anglais
-     * function qui demande au model tous les super heros
-     * affiche ensuite la vue heroView.php avec les heros
-     */
     public function getAllAction($datas=null){
-        $heroes = $this->heroDAO->getAllHero();
+        $em = $this->getDoctrine();
+        $modif = false;
+        $hero = new SuperHeroDTO();
 
-        foreach ($heroes as $hero){
-            $team = new TeamDAO();
-            $teamDTO = new TeamDTO();
-            $teamDTO->setTeamId($hero->getHeroTeamId());
-            $teamDTO = $team->getOneTeam($teamDTO);
-            $hero->setHeroTeamId($teamDTO);
+        if(isset($datas[2])){
+            $modif = true;
+            $hero = $this->getDoctrine()->getRepository('\src\Model\SuperHeroDTO')->find($datas[2]);
         }
-        $teamDAO = new TeamDAO();
-        $teams = $teamDAO->getAllTeam();
 
-        $powerDAO = new PowerDAO();
-        $powers = $powerDAO->getAllPower();
+        if(isset($_POST['heroFirstName'], $_POST['heroLastName'], $_POST['heroPseudo'], $_POST['heroCountry'], $_POST['heroTeamId'])){
+            $hero->hydrate($_POST);
 
-        $view = new View('hero','allHero');
-        return $view->renderView(['heroes'=>$heroes,'teams'=>$teams,'powers'=>$powers]);
+            $team = $em->getRepository('\src\Model\TeamDTO')->find($_POST['heroTeamId']);
+
+            $hero->setHeroTeam($team);
+
+            if(isset($_POST['heroPower'])){
+                foreach($_POST['heroPower'] as $power){
+                    $p = $em->getRepository('src\Model\PowerDTO')->find((int)$power);
+
+                    $heroPower = new HeroPowerDTO();
+                    $heroPower->setPower($p);
+                    $heroPower->setHeroPowerLevel($_POST['heroPowerLevel' . $power]);
+                    $hero->addSuperPower($heroPower);
+                    $em->persist($heroPower);
+                }
+            }            
+
+            $em->persist($hero);
+
+            $em->flush();
+            header("location: ".PATH."/index.php/hero/getAll");
+            die();
+        }
+
+        $heroes = $em->getRepository('src\Model\SuperHeroDTO')->findAll();
+        $teams = $em->getRepository('src\Model\TeamDTO')->findAll();
+        $powers = $em->getRepository('src\Model\PowerDTO')->findAll();
+
+        return $this->render('hero', 'allHero', [
+            'heroes'=>$heroes,
+            'teams'=>$teams,
+            'powers'=>$powers,
+            'heroUpdate' => $hero
+        ]);
     }
 
     /**
@@ -57,13 +68,17 @@ class HeroController
      */
     public function getOneAction($datas=null){
         if(isset($datas[2])) {
-            $this->heroDTO->setHeroID($datas[2]);
-            $this->heroDTO = $this->heroDAO->getOneHero($this->heroDTO);
-            $teamDAO = new TeamDAO();
-            $teams = $teamDAO->getAllTeam();
-            $view = new View('hero','oneHero');
-            return $view->renderView(['heroDTO'=>$this->heroDTO,'teams'=>$teams]);
+            $em = $this->getDoctrine();
+
+            $hero = $em->getRepository('src\Model\SuperHeroDTO')->find($datas[2]);
+
+            return $this->render('hero', 'oneHero', [
+                'heroDTO'=> $hero
+            ]);
         }
+
+        header("location: ".PATH."/index.php/hero/getAll");
+        die();
     }
 
     /**
@@ -105,16 +120,17 @@ class HeroController
         header("location: /".PATH."/index.php/hero/getAll");
     }
 
-    /**
-     *
-     * @param null $datas
-     */
-    public function deleteAction($datas=null){
-        if(isset($datas[2])) {
-            $this->heroDTO->setHeroID($datas[2]);
-            $this->heroDAO->deleteHero($this->heroDTO);
+    public function deleteAction($datas=null)
+    {
+       if(isset($datas[2])) {
+            $em = $this->getDoctrine();
+            $repo = $em->getRepository('src\Model\SuperHeroDTO');
+            $this->getDoctrine()->remove($repo->find($datas[2]));
+            $em->flush();
         }
-        header("location: /".PATH."/index.php/hero/getAll");
+
+        header("location: ".PATH."/index.php/hero/getAll");
+        die();
     }
 
 }

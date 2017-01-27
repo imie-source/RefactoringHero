@@ -5,7 +5,7 @@ namespace src\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
-* @Entity(repositoryClass="SuperHeroRepository")
+* @Entity
 * @Table(name="super_hero")
 **/
 class SuperHeroDTO
@@ -80,17 +80,9 @@ class SuperHeroDTO
     /**
      * @return mixed
      */
-    public function getHeroID()
+    public function getId()
     {
-        return $this->heroID;
-    }
-
-    /**
-     * @param mixed $heroID
-     */
-    public function setHeroID($heroID)
-    {
-        $this->heroID = $heroID;
+        return $this->id;
     }
 
     public function getHeroFirstName()
@@ -157,19 +149,25 @@ class SuperHeroDTO
     /**
      * @return mixed
      */
-    public function getHeroTeamId()
+    public function getHeroTeam()
     {
-        return $this->heroTeamId;
+        return $this->heroTeam;
     }
 
     /**
      * @param mixed $heroTeamId
      */
-    public function setHeroTeamId($heroTeamId)
+    public function setHeroTeam($heroTeam)
     {
-        $this->heroTeamId = $heroTeamId;
+        $this->heroTeam = $heroTeam;
     }
 
+    public function addSuperPower(HeroPowerDTO $heroPower){
+        $this->superPowers[] = $heroPower;
+        $heroPower->setHero($this);
+    }
 
-
+    public function getSuperPowers(){
+        return $this->superPowers;
+    }
 }

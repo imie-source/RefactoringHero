@@ -8,6 +8,8 @@
 
 namespace src\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
 * @Entity
 * @Table(name="power")
@@ -29,6 +31,11 @@ class PowerDTO
     * @Column(type="string", name="power_desc")
     **/
     private $powerDesc;
+
+    /**
+    * @OneToMany(targetEntity="HeroPowerDTO", mappedBy="power")
+    **/
+    private $heroesPower;
 
     //************************** Method ********************************************/
 
@@ -64,10 +71,14 @@ class PowerDTO
 
     //***************************Getters and setters *******************************/
 
+    public function __construct(){
+        $this->heroesPower = new ArrayCollection();
+    }
 
-    /**
-     * @return mixed
-     */
+    public function addHero(HeroPowerDTO $heroPower){
+        $this->heroesPower[] = $heroPower;
+    }
+
     public function getId()
     {
         return $this->id;

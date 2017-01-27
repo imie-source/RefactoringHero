@@ -18,12 +18,12 @@ class HeroPowerDTO
     private $id;
 
     /**
-    * @ManyToOne(targetEntity="HeroPowerDTO", inversedBy="superPowers")
+    * @ManyToOne(targetEntity="SuperHeroDTO", inversedBy="superPowers")
     **/
     private $hero;
 
     /**
-    * @ManyToOne(targetEntity="PowerDTO")
+    * @ManyToOne(targetEntity="PowerDTO", inversedBy="heroesPower")
     **/
     private $power;
 
@@ -71,49 +71,26 @@ class HeroPowerDTO
     /**
      * @return mixed
      */
-    public function getHeroPowerID()
+    public function getId()
     {
-        return $this->heroPowerID;
+        return $this->id;
     }
 
-    /**
-     * @param mixed $heroPowerID
-     */
-    public function setHeroPowerID($heroPowerID)
-    {
-        $this->heroPowerID = $heroPowerID;
+    public function getHero(){
+        return $this->hero;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHeroPowerHeroID()
-    {
-        return $this->heroPowerHeroID;
+    public function setHero(SuperHeroDTO $hero){
+        $this->hero = $hero;
     }
 
-    /**
-     * @param mixed $heroPowerHeroID
-     */
-    public function setHeroPowerHeroID($heroPowerHeroID)
-    {
-        $this->heroPowerHeroID = $heroPowerHeroID;
+    public function getPower(){
+        return $this->power;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHeroPowerPowerId()
-    {
-        return $this->heroPowerPowerId;
-    }
-
-    /**
-     * @param mixed $heroPowerPowerId
-     */
-    public function setHeroPowerPowerId($heroPowerPowerId)
-    {
-        $this->heroPowerPowerId = $heroPowerPowerId;
+    public function setPower(PowerDTO $power){
+        $this->power = $power;
+        $power->addHero($this);
     }
 
     /**
