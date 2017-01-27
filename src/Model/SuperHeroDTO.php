@@ -1,24 +1,51 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: r-1
- * Date: 20/12/2016
- * Time: 16:13
- */
-
 namespace src\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
+/**
+* @Entity(repositoryClass="SuperHeroRepository")
+* @Table(name="super_hero")
+**/
 class SuperHeroDTO
 {
     /******************* Attributs *******************/
-    private $heroID;
+    /**
+    * @Id
+    * @GeneratedValue
+    * @Column(type="integer")
+    **/
+    private $id;
+    /**
+    * @Column(type="string", name="hero_firstname")
+    **/
     private $heroFirstName;
+    /**
+    * @Column(type="string", name="hero_lastname")
+    **/
     private $heroLastName;
+    /**
+    * @Column(type="string", name="hero_pseudo")
+    **/
     private $heroPseudo;
-    Private $heroCountry;
-    private $heroTeamId;
-    private $superPowers = [];
+    /**
+    * @Column(type="string", name="hero_country")
+    **/
+    private $heroCountry;
+    /**
+    * @ManyToOne(targetEntity="TeamDTO")
+    * @JoinColumn(name="hero_team_id")
+    **/
+    private $heroTeam;
+    /**
+    * @OneToMany(targetEntity="HeroPowerDTO", mappedBy="hero")
+    **/
+    private $superPowers;
+
+    public function __construct(){
+        $this->superPowers = new ArrayCollection();
+    }
 
     /****************** Method ***********************/
 
@@ -46,10 +73,6 @@ class SuperHeroDTO
             }
         }
     }
-
-    /**
-     * @return mixed
-     */
 
     /****************** Getters and Setters *********/
 

@@ -1,21 +1,35 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: r-1
- * Date: 23/12/2016
- * Time: 15:15
- */
 
 namespace src\Model;
 
-
+/**
+* @Entity
+* @Table(name="hero_power")
+**/
 class HeroPowerDTO
 {
     //************************** Attributes ****************************************/
 
-    private $heroPowerID;
-    private $heroPowerHeroID;
-    private $heroPowerPowerId;
+    /**
+    * @Id
+    * @GeneratedValue
+    * @Column(type="integer")
+    **/
+    private $id;
+
+    /**
+    * @ManyToOne(targetEntity="HeroPowerDTO", inversedBy="superPowers")
+    **/
+    private $hero;
+
+    /**
+    * @ManyToOne(targetEntity="PowerDTO")
+    **/
+    private $power;
+
+    /**
+    * @Column(type="integer", name="hero_power_level")
+    **/
     private $heroPowerLevel;
 
 

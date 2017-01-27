@@ -8,12 +8,26 @@
 
 namespace src\Model;
 
-
+/**
+* @Entity
+* @Table(name="team")
+**/
 class TeamDTO
 {
     //************************** Attributes ****************************************/
-    private $teamId;
+    /**
+    * @Id
+    * @GeneratedValue
+    * @Column(type="integer")
+    **/
+    private $id;
+    /**
+    * @Column(type="string", name="team_name")
+    **/
     private $teamName;
+    /**
+    * @Column(type="string", name="team_logo")
+    **/
     private $teamLogo;
 
     //************************** Method ********************************************/

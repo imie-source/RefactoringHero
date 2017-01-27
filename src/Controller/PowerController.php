@@ -8,24 +8,17 @@
 
 namespace src\Controller;
 
-use src\Model\PowerDAO;
 use src\Model\PowerDTO;
 use src\View\View;
 
-class PowerController
+class PowerController extends Controller
 {
     private $powerDAO;
     private $powerDTO;
 
-    public function __construct()
+    public function getAllAction()
     {
-        $this->powerDAO = new PowerDAO();
-        $this->powerDTO = new PowerDTO();
-    }
-
-    public function getAllAction($datas=null,$powerUpdate=null)
-    {
-        $powers = $this->powerDAO->getAllPower();
+        $powers = $this->getDoctrine()->getRepository('\src\Model\PowerDTO')->findAll();
         $view = new View('power','allPower');
         return $view->renderView(['powers'=>$powers,'powerUpdate'=>$powerUpdate]);
     }

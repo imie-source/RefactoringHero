@@ -8,12 +8,26 @@
 
 namespace src\Model;
 
-
+/**
+* @Entity
+* @Table(name="power")
+**/
 class PowerDTO
 {
     //************************** Attributes ****************************************/
-    private $powerId;
+    /**
+    * @Id
+    * @GeneratedValue
+    * @Column(type="integer")
+    **/
+    private $id;
+    /**
+    * @Column(type="string", name="power_name")
+    **/
     private $powerName;
+    /**
+    * @Column(type="string", name="power_desc")
+    **/
     private $powerDesc;
 
     //************************** Method ********************************************/

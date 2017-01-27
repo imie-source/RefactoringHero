@@ -11,7 +11,7 @@
 
     <title>Super Hero Land</title>
 </head>
-<body>
+<body class="container">
 
 <header>
     <h1>Bienvenue dans un monde de super heros</h1>

@@ -1,14 +1,9 @@
 <?php
-
-/**
- * Created by PhpStorm.
- * User: r-1
- * Date: 21/12/2016
- * Time: 11:50
- */
+// ./src/Dispatcher.php
 
 namespace src\Controller;
 
+use src\Controller\DefaultController;
 
 class Dispatcher
 {
@@ -16,44 +11,45 @@ class Dispatcher
     private $method;
     private $result;
     private $defControl;
+    private $em;
 
-    public function __construct($url,$method)
+    public function __construct($em)
     {
-        $this->url = $url;
-        $this->method = $method;
-        $this->defControl = new DefaultController();
+        $this->em = $em; // <-- Doctrine object
+        $this->url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->defControl = new DefaultController($this->em);
     }
 
     public function dispatch()
     {
-        if($this->url!=null){
+        $flag = true;
+        if(!is_null($this->url)){
             $this->match($this->url);
-            if(isset($this->result[0])&&isset($this->result[1])) {
-                $path = __DIR__ . '\\' . ucfirst($this->result[0]) . 'Controller.php';
+            if(isset($this->result[0]) && isset($this->result[1])) {
+                $path = __DIR__ . DIRECTORY_SEPARATOR . ucfirst($this->result[0]) . 'Controller.php';
                 $controller = '\\src\\Controller\\' . ucfirst($this->result[0]) . 'Controller';
                 $action = $this->result[1] . 'Action';
                 if (file_exists($path)) {
-                    $theController = new $controller();
+                    // Don't forget to give Doctrine to the controller
+                    $theController = new $controller($this->em);
                     if (method_exists($theController, $action)) {
+                        $flag = false;
                         return $theController->$action($this->result);
-                    } else
-                        return $this->defControl->indexAction();
-                } else
-                    return $this->defControl->indexAction();
-            }else
-                return $this->defControl->indexAction();
-        }else
+                    }
+                }
+            }
+        }
+
+        if($flag){
             return $this->defControl->indexAction();
+        }            
     }
 
-    /**
-     * @param $url
-     */
+    // Split (/) url in array and store it in $this->result
     private function match($url){
         $pattern = '/\//';
         $url = trim($url,'\/');
-        $this->result = preg_split($pattern,$url);
+        $this->result = array_slice(preg_split($pattern,$url), 2);
     }
-
-
 }
