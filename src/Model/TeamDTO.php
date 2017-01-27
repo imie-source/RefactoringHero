@@ -72,9 +72,9 @@ class TeamDTO
     /**
      * @return mixed
      */
-    public function getTeamId()
+    public function getId()
     {
-        return $this->teamId;
+        return $this->id;
     }
 
     /**

@@ -12,12 +12,12 @@
         foreach ($teams as $team){
             ?>
             <tr>
-                <td><?= $team->getTeamId() ?></td>
-                <td><a href=/<?= PATH ?>/index.php/team/getOne/<?= $team->getTeamId()?>"><?= $team->getTeamName() ?></a></td>
+                <td><?= $team->getId() ?></td>
+                <td><a href="<?= PATH ?>/index.php/team/getAll/<?= $team->getId()?>"><?= $team->getTeamName() ?></a></td>
                 <td><?= $team->getTeamLogo() ?></td>
                 <td>
-                    <a href="/<?= PATH ?>/index.php/team/delete/<?= $team->getTeamId()?>" class="fa fa-trash"></a>
-                    <a href="/<?= PATH ?>/index.php/team/copy/<?= $team->getTeamId()?>" class="fa fa-clone"></a>
+                    <a href="<?= PATH ?>/index.php/team/delete/<?= $team->getId()?>" class="fa fa-trash"></a>
+                    <a href="<?= PATH ?>/index.php/team/getAll/<?= $team->getId()?>" class="fa fa-pencil-square-o"></a>
                 </td>
             </tr>
             <?php
@@ -29,7 +29,7 @@
 </section>
 <hr>
 <section class="container-fluid">
-    <form action="<?= (isset($teamUpdate))? "/". PATH ."/index.php/team/update/".$teamUpdate->getTeamId(): "/".PATH."/index.php/team/insert"; ?>" method="POST" class="form-horizontal">
+    <form method="POST" class="form-horizontal">
         <fieldset>
             <legend><?= (isset($teamUpdate))? 'Modification d\'une équipes':'Création de nouvelles équipes'; ?></legend>
             <div class="form-group">
@@ -39,8 +39,8 @@
                            name="teamName"
                            id="teamName"
                            class="form-control"
-                           value="<?= (isset($teamUpdate))? $teamUpdate->getTeamName():''; ?>"
-                           placeholder="saissez le nom de l'équipe">
+                           value="<?= $teamUpdate->getTeamName() ?>"
+                           placeholder="Saisissez le nom de l'équipe">
                 </div>
             </div>
             <div class="form-group">
@@ -50,7 +50,7 @@
                            name="teamLogo"
                            id="teamLogo"
                            class="form-control"
-                           value=""
+                           value="<?= $teamUpdate->getTeamLogo() ?>"
                            placeholder="L'image de l'équipe">
                 </div>
             </div>

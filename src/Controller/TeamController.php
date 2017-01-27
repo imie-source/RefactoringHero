@@ -9,25 +9,37 @@
 namespace src\Controller;
 
 
-use src\Model\TeamDAO;
 use src\Model\TeamDTO;
 use src\View\View;
 
-class TeamController
+class TeamController extends Controller
 {
-    private $teamDTO;
-    private $teamDAO;
-
-    public function __construct()
-    {
-        $this->teamDAO = new TeamDAO();
-        $this->teamDTO = new TeamDTO();
-    }
 
     public function getAllAction($datas = null,$teamUpdate=null){
-        $teams = $this->teamDAO->getAllTeam();
-        $view = new View('team','allTeam');
-        return $view->renderView(['teams' => $teams,'teamUpdate'=>$teamUpdate]);
+        $em = $this->getDoctrine();
+        $modif = false;
+        $team = new TeamDTO();
+
+        if(isset($datas[2])){
+            $modif = true;
+            $team = $this->getDoctrine()->getRepository('\src\Model\TeamDTO')->find($datas[2]);
+        }
+
+        if(isset($_POST['teamName'], $_POST['teamLogo'])){
+            $team->hydrate($_POST);
+
+            $em->persist($team);
+            $em->flush();
+            header("location: ".PATH."/index.php/team/getAll");
+            die();
+        }
+        
+        $teams = $em->getRepository('\src\Model\TeamDTO')->findAll();
+
+        return $this->render('team', 'allTeam', [
+            'teams'=>$teams,
+            'teamUpdate' => $team
+        ]);
     }
 
     public function getOneAction($datas=null){
@@ -60,11 +72,15 @@ class TeamController
 
     public function deleteAction($datas=null)
     {
-        if(isset($datas[2])) {
-            $this->teamDTO->setTeamID($datas[2]);
-            $this->teamDAO->deleteTeam($this->teamDTO);
+       if(isset($datas[2])) {
+            $em = $this->getDoctrine();
+            $repo = $em->getRepository('src\Model\TeamDTO');
+            $this->getDoctrine()->remove($repo->find($datas[2]));
+            $em->flush();
         }
-        header("location: /".PATH."/index.php/team/getAll");
+
+        header("location: ".PATH."/index.php/team/getAll");
+        die();
     }
 
 }
